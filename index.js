@@ -18,10 +18,7 @@ const app = express();
 app.use(helmet()); // Adds various HTTP headers for security
 app.use(
   cors({
-    origin:
-      process.env.FRONTEND_URL ||
-      "http://localhost:5173" ||
-      "https://tap-task-theta.vercel.app",
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     credentials: true, // Allow cookies with CORS
   })
 );
