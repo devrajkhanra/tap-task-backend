@@ -10,7 +10,7 @@ const generateTokenAndSetCookie = (userId, res) => {
   res.cookie("token", token, {
     httpOnly: true, // Prevents JavaScript access to the cookie
     secure: process.env.NODE_ENV === "production", // HTTPS only in production
-    sameSite: "strict", // Protection against CSRF
+    sameSite: "None", // Protection against CSRF
     maxAge: 3600000, // 1 hour in milliseconds
     path: "/", // Cookie is available for all paths
   });
