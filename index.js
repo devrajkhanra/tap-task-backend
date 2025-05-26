@@ -13,13 +13,14 @@ const listEndpoints = require("express-list-endpoints");
 dotenv.config();
 
 const app = express();
-app.set("trust proxy", 1);
+app.set("trust proxy", 1); // use in production
 
 // Security Middleware
 app.use(helmet()); // Adds various HTTP headers for security
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    // origin: "http://localhost:5173", // use in developement
     credentials: true, // Allow cookies with CORS
   })
 );
@@ -31,8 +32,8 @@ const limiter = rateLimit({
 });
 
 app.use((req, res, next) => {
-  console.log("Cookies Received:", req.cookies);
-  console.log("Request Headers:", req.headers);
+  // console.log("Cookies Received:", req.cookies);
+  // console.log("Request Headers:", req.headers);
   next();
 });
 

@@ -10,17 +10,22 @@ const todoSchema = new mongoose.Schema({
     default: "medium",
     required: true,
   },
-  estimatedTimeMinutes: {
-    type: Number,
-    min: [1, "Estimated time must be at least 1 minute"],
-    max: [
-      10080,
-      "Estimated time must be less than or equal to 1 week (7 days)",
-    ],
-    required: false,
+  dueDate: { type: Date, required: true }, // Mandatory
+  status: {
+    type: String,
+    enum: ["pending", "completed"],
+    default: "pending",
   },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date },
+});
+
+// Automatically mark as completed if due date has passed
+todoSchema.pre("save", function (next) {
+  if (this.dueDate && new Date(this.dueDate) < new Date()) {
+    this.status = "completed";
+  }
+  next();
 });
 
 const Todo = mongoose.model("Todo", todoSchema);

@@ -6,31 +6,16 @@ const asyncHandler = require("express-async-handler");
 // @access  Private
 const createTodo = asyncHandler(async (req, res) => {
   const { userId } = req.params;
-  const { title, description, priority, estimatedTimeMinutes } = req.body;
-
-  console.log(req.body);
+  const { title, description, priority, dueDate } = req.body;
 
   if (!title) {
     res.status(400);
     throw new Error("Title is required");
   }
 
-  const validPriorities = ["low", "medium", "high"];
-  if (priority && !validPriorities.includes(priority)) {
+  if (!dueDate) {
     res.status(400);
-    throw new Error("Invalid priority value");
-  }
-
-  if (
-    estimatedTimeMinutes !== undefined &&
-    (isNaN(estimatedTimeMinutes) ||
-      estimatedTimeMinutes < 1 ||
-      estimatedTimeMinutes > 10080)
-  ) {
-    res.status(400);
-    throw new Error(
-      "Estimated time must be between 1 minute and 1 week (10080 minutes)"
-    );
+    throw new Error("Due date is required.");
   }
 
   const newTodo = new Todo({
@@ -38,10 +23,10 @@ const createTodo = asyncHandler(async (req, res) => {
     title,
     description,
     priority,
-    estimatedTimeMinutes,
+    dueDate: new Date(dueDate),
   });
-  const savedTodo = await newTodo.save();
 
+  const savedTodo = await newTodo.save();
   res.status(201).json(savedTodo);
 });
 
@@ -66,32 +51,23 @@ const getAllTodos = asyncHandler(async (req, res) => {
 // @access  Private
 const updateTodo = asyncHandler(async (req, res) => {
   const { userId, todoId } = req.params;
-  const { title, description, priority, estimatedTimeMinutes } = req.body;
+  const { title, description, priority, dueDate } = req.body;
 
-  console.log("Params: ", req.params);
-  console.log("Body: ", req.body);
-
-  const validPriorities = ["low", "medium", "high"];
-  if (priority && !validPriorities.includes(priority)) {
+  if (!dueDate) {
     res.status(400);
-    throw new Error("Invalid priority value");
+    throw new Error("Due date is required.");
   }
 
-  if (
-    estimatedTimeMinutes !== undefined &&
-    (isNaN(estimatedTimeMinutes) ||
-      estimatedTimeMinutes < 1 ||
-      estimatedTimeMinutes > 10080)
-  ) {
-    res.status(400);
-    throw new Error(
-      "Estimated time must be between 1 minute and 1 week (10080 minutes)"
-    );
-  }
+  const updateFields = {
+    title,
+    description,
+    priority,
+    dueDate: new Date(dueDate),
+  };
 
   const updatedTodo = await Todo.findByIdAndUpdate(
     todoId,
-    { $set: { title, description, priority, estimatedTimeMinutes } },
+    { $set: updateFields },
     { new: true, runValidators: true }
   );
 
